@@ -3,7 +3,6 @@
 import sys
 import csv
 import math
-import getopt
 import numpy as np
 
 class AI:
@@ -50,9 +49,6 @@ class AI:
         self.layers[1] = self.calculate_layer(self.layers[0], self.layers[1], self.w_hl0)
         self.layers[2] = self.calculate_layer(self.layers[1], self.layers[2], self.w_hl1)
         self.layers[3] = self.calculate_layer(self.layers[2], self.layers[3], self.w_out)
-
-    def normalize_answer(self, value):
-        return 0.2 + value * 0.6
 
     def calculate_error(self, out):
         self.errors[3] = out - self.layers[3]
