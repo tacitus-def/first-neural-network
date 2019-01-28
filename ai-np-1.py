@@ -94,7 +94,7 @@ while True:
     break
 
 while True:
-    print("Input: ")
+    print("Input: ", end='')
     i = input()
     n.calculate(list(map(float, i.split())))
     print(n.get_result())
