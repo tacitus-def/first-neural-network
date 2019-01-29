@@ -6,9 +6,11 @@ import math
 import numpy as np
 
 class AI:
-    w_hl0 = np.random.sample((4, 9))
-    w_hl1 = np.random.sample((3, 4))
-    w_out = np.random.sample((2, 3))
+    weights = [
+        np.random.sample((4, 9)),
+        np.random.sample((3, 4)),
+        np.random.sample((2, 3))
+    ];
     layers = [ np.zeros(9), np.zeros(4), np.zeros(3), np.zeros(2) ]
     errors = [ np.zeros(9), np.zeros(4), np.zeros(3), np.zeros(2) ]
 
@@ -46,28 +48,25 @@ class AI:
 
     def calculate(self, data_input):
         self.layers[0] = data_input
-        self.layers[1] = self.calculate_layer(self.layers[0], self.layers[1], self.w_hl0)
-        self.layers[2] = self.calculate_layer(self.layers[1], self.layers[2], self.w_hl1)
-        self.layers[3] = self.calculate_layer(self.layers[2], self.layers[3], self.w_out)
+        for i in range(1, len(self.layers)):
+            self.layers[i] = self.calculate_layer(self.layers[i-1], self.layers[i], self.weights[i-1])
 
     def calculate_error(self, out):
-        self.errors[3] = out - self.layers[3]
-        self.errors[2] = self.find_error(self.errors[2], self.w_out, self.errors[3])
-        self.errors[1] = self.find_error(self.errors[1], self.w_hl1, self.errors[2])
-
+        self.errors[-1] = out - self.layers[-1]
+        for i in range(len(self.errors) - 2, 0, -1):
+            self.errors[i] = self.find_error(self.errors[i], self.weights[i], self.errors[i + 1])
         error = 0
-        for i in self.errors[3]: error += i ** 2
-        error /= len(self.errors[3])
+        for i in self.errors[-1]: error += i ** 2
+        error /= len(self.errors[-1])
         return error
 
     def weight_correction(self):
-        self.w_hl0 = self.correction(self.w_hl0, self.errors[1], self.layers[1], self.layers[0], self.coef)
-        self.w_hl1 = self.correction(self.w_hl1, self.errors[2], self.layers[2], self.layers[1], self.coef)
-        self.w_out = self.correction(self.w_out, self.errors[3], self.layers[3], self.layers[2], self.coef)
+        for i in range(len(self.weights)):
+            self.weights[i] = self.correction(self.weights[i], self.errors[i+1], self.layers[i+1], self.layers[i], self.coef)
 
     def get_result(self):
         r = []
-        for i in self.layers[3]: r.append(round(i))
+        for i in self.layers[-1]: r.append(round(i))
         return r
 
     def learning(self):
